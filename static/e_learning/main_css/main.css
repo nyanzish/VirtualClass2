@@ -1,0 +1,15 @@
+i.fab {
+  display: inline-block;
+  border-radius: 60px;
+  box-shadow: 0px 0px 2px #888;
+  padding: 0.5em 0.6em;
+
+}
+@media only screen and (max-width: 600px) {
+  .fa_phone {
+    margin-left: 0px !important;
+  }
+  .fa_map{
+  	margin-left: 2px !important;
+  }
+}

@@ -1,0 +1,64 @@
+{% extends 'student_base.html' %}
+
+{% load static %}
+{% block head_title %}Start-Learning{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb" style="background-color: #fdfdff !important;">
+      <li class="breadcrumb-item active text-primary" aria-current="page"><a href="{% url 'e_learning:home_view' %}">Home</a>
+      </li>
+      <li class="breadcrumb-item" ><a href="#" class="text-dark"></a></li>
+    </ol>
+ </nav>
+ <div class="container-fluid">
+ 	<div class="row">
+ 		<div class="col-md-6">
+ 			<div class="input-group shadow-sm">
+		    <input type="text" class="form-control border-right-0 border" placeholder="Search for........." >
+		    <div class="input-group-append">
+		      <button class="btn btn-outline-primary border-left-0 border-right-0 border" type="button">
+		        <i class="fa fa-search"></i>
+		      </button>
+		    </div>
+		  </div>
+ 		</div>
+ 		<div class="col-md-6">
+ 		</div>
+ 	</div>
+ </div>
+<div class="container-fluid mt-3">
+	<div class="card shadow-sm mb-5 pb-4">
+		<h6 class="pt-4 pl-4 pb-1" style="font-size: 18px; font-family: Times;"><i class="fas fa-book-open fa-1x ml-2">&nbsp;&nbsp;On-going Subjects</i></h6>
+		<div class="row p-3">
+			{% for item in overview %}
+			<div class="col-md-3 p-2">
+				<div class="card shadow w-100 h-100">
+			  	<div class="text-center">
+				  <img class="rounded-circle" src="{% static 'e_learning/image/logo.PNG' %}" class="card-img-top" width="80%" height="100%" alt="...">
+				  </div>
+				  <div class="card-body text-center">
+				    <h6 class="card-title text-primary"><b>{{ item.subject }}</b>
+				    </h6>
+				    <h6 class="text-center"><b>{{ item.class_n }}</b></h6>
+				    <p class="text-muted text-center">
+				    <span style="font-size: 14px;">Duration: {{ item.duration }}</span>
+			    	</p><hr>
+			    	<div class="h5 mb-0 font-weight-bold text-gray-800"><small><b>
+			    		<span class="text-danger">USD:</span>&nbsp;{{ item.price }}<br><span class="text-danger">UGX:</span>&nbsp;{{ item.price }}/=</b></small>
+			    	</div><hr>
+			    	<p class="text-muted text-center">
+	
+				    <span>By: Mr. {{item.teacher.user_profile.firstname}} {{item.teacher.user_profile.lastname}}</span>
+			    	</p>
+				    <a href="{{ item.get_absolute_url }}" class="btn btn-outline-primary icon-btn btn-sm mt-2 w-50 " style="border-radius: 19px;">
+                      <span class="btn-fa fas fa-award rounded-circle text-dark bg-white p-1">
+                      </span>&nbsp;&nbsp;Learn More
+                  </a>
+				</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}
