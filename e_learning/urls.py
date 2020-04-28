@@ -1,8 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-
-from django.conf.urls import url
+from django.conf.urls import url ,handler404,handler500
 
 from .views import(
 	index,
@@ -13,7 +12,6 @@ from .views import(
 	subject_overview,
 	teacher_homepage,
 	about,
-	error,
 	teacher_new_base,
 	view_my_students,
 	teacher_uploaded_subjects,
@@ -50,7 +48,8 @@ from .views import(
 	MessagesView,
 	choose,
 	edit_my_topic,
-	topic_delete
+	topic_delete,
+	Search
 
 	)
 
@@ -66,7 +65,6 @@ urlpatterns = [
     path('subject_overview/',subject_overview, name='subject_overview'),
     path('teacher_homepage/',teacher_homepage, name='teacher_homepage'),
     path('about/',about, name='about'),
-    path('error/',error, name='error'),
     path('my_students/',view_my_students, name='my_students'),
     path('home_view/', HomeView.as_view(), name='home_view'),
     path('my_uploaded_subjects/',teacher_uploaded_subjects,name='my_uploaded_subjects'),
@@ -114,6 +112,7 @@ urlpatterns = [
 	url(r'^dialogs/$', MessagesView.as_view(), name='messages'),
 	path('choose/',choose,name='choose'),
 	path('edit_my_topic/<slug>/',edit_my_topic,name='edit_my_topic'),
+	path('search/',Search,name='search'),
 
 ]
 

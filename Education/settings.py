@@ -25,7 +25,7 @@ SECRET_KEY = 'je)%51vc&+par^d51&xcbwb$xxc7+pr$n$^o0-0xr3eph&%5q='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['nyanzi15.pythonanywhere.com']
 
 
 # Application definition
@@ -162,18 +162,18 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ####################################
     ##  CKEDITOR CONFIGURATION ##
 ####################################
- 
+
 CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'
- 
+
 CKEDITOR_UPLOAD_PATH = 'uploads/'
 CKEDITOR_IMAGE_BACKEND = "pillow"
- 
+
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': None,
     },
 }
- 
+
 ###################################
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'

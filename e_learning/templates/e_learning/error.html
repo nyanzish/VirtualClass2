@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mb-5 mt-2">
 	<div class="row justify-content-center">
-		<div class="col-md-8">
+		<div class="col-md-12">
 			<div class="card border-0">
 				<div class="card-body">
 					<div class="container-fluid">
@@ -30,36 +30,3 @@
 
 
 
-<div class="owl-carousel owl-init slide-items" id="slide_custom_nav" data-custom-nav="custom-nav-first" data-items="4" data-margin="20" data-dots="true" data-nav="false">
-		{% for item in chickens %}
-<div class="item-slide">
-<figure class="card card-product">
-	<div class="img-wrap"><a href="{{ item.get_absolute_url }}"><img src="{{ item.image.url }}" class="img-fluid" style="height: 250px; width: 300px;"></a>
-		<a class="btn-overlay" href="#"><i class="fa fa-search-plus"></i> Quick view</a>
-	</div>
-	<figcaption class="info-wrap">
-			<h4 class="title"><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h4> 
-			<p class="desc">{{ item.saler }}</p>
-			<div class="rating-wrap">
-				<ul class="rating-stars">
-					<li style="width:80%" class="stars-active"> 
-						<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-					</li>
-					<li>
-						<i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i> 
-					</li>
-				</ul>
-				<div class="label-rating">132 reviews</div>
-				<div class="label-rating">154 orders </div>
-			</div> <!-- rating-wrap.// -->
-	</figcaption>
-	<div class="bottom-wrap">
-			<a href="{{ item.get_add_to_cart_url }}" class="btn btn-sm btn-primary float-right">Order Now</a>	
-			<div class="price-wrap h5">
-				<span class="price-new">UGX1280</span> <del class="price-old">UGX1980</del>
-			</div> <!-- price-wrap.// -->
-	</div> <!-- bottom-wrap.// -->
-</figure>
-</div> <!-- col // -->
-{% endfor %}
-</div> <!-- row.// -->

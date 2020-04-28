@@ -3,12 +3,14 @@ from .forms import Overviewform,Uploadform,Applyform,MessageForm,ChatForm
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 #from django.utils import timezone
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
-from django.contrib.auth.models import Group, Permission 
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, View
 from django.http import FileResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -48,7 +50,7 @@ from .models import (
 
 # Create your views here.
 def index(request):
-    global lista_two            
+    global lista_two
     lista_one = []
     lista_two = []
     lista_three = []
@@ -59,7 +61,7 @@ def index(request):
         lista_one.append(value.subject_image.url)
         lista_two.append(value.subject_name)
         lista_four.append(value.id)
-        subject_o = Subjects_overview.objects.filter(subject = value.id).count() 
+        subject_o = Subjects_overview.objects.filter(subject = value.id).count()
         lista_three.append(subject_o)
     # #print(lista_one)
     # print(lista_two)
@@ -73,6 +75,21 @@ def index(request):
         "lista_all": lista_all
         }
     return render(request,'index.html',context)
+
+@login_required
+def Search(request):
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET.get('q')
+        print(query_string)
+        overview = Subjects_overview.objects.filter(subject__subject_name__icontains = query_string)|Subjects_overview.objects.filter(class_n__name__icontains = query_string)
+    else:
+        overview = None
+
+    context = {
+            'overview':overview,
+            'query_string':query_string
+    }
+    return render(request,'student_homepage.html',context)
 
 def subject_get(request):
     sub_id = request.POST.get('get_subject')
@@ -96,15 +113,16 @@ def subject_get(request):
         'subject_details' : subject_details,
     }
 
-    return render(request,'particular_.html',context)       
+    return render(request,'particular_.html',context)
 
+@login_required
 def my_profile(request):
     content = UserProfile.objects.get(user= request.user)
     print(content)
     context = {
         'content':content,
         }
-    
+
     if request.method == "POST":
         content.firstname = request.POST.get('first_name')
         content.lastname = request.POST.get('last_name')
@@ -117,8 +135,9 @@ def my_profile(request):
         messages.success(request, 'Profile details updated.')
     return render(request,'my_profile.html',context)
 
+@login_required
 def upload(request):
-    
+
     #new_record=
     teacher_id=Teacher_apply.objects.get(user=request.user.id)
     print(teacher_id.id)
@@ -135,18 +154,15 @@ def upload(request):
     except ObjectDoesNotExist:
         messages.info(request, "You do not have an overview for this particular class ,First create an overview.")
         return redirect('e_learning:overview')
-     
-
-
     return redirect('e_learning:upload_to')
 
 def name ():
     sub_results=Subjects.objects.get(id=subject_id)
     return sub_results.subject_name
 
-
+@login_required
 def upload_to(request):
-    
+
     teacher_id=Teacher_apply.objects.get(user=request.user.id)
     #print(teacher_id.id)
     print(class_id,subject_id,'88888888888888888')
@@ -173,7 +189,7 @@ def upload_to(request):
     }
     if request.method=='POST':
         form = Uploadform(request.POST, request.FILES)
-        
+
         form.fields['overview'].initial=overview.id
         form.fields['overview'].type='hidden'
         form.fields['teacher'].initial=teacher_id
@@ -185,7 +201,7 @@ def upload_to(request):
         form.fields['subject'].initial=subject_id
         form.fields['class_level'].value=subject
         form.fields['subject'].type='hidden'
-        
+
         topic = request.POST.get('topic')
         print(topic)
         save_form = form.save(commit=False)
@@ -227,10 +243,10 @@ def upload_to(request):
         print('done_saving')
         messages.info(request, "Topic successfully added")
 
-    
+
     return render(request,'upload.html',context)
 
-
+@login_required
 def overview(request):
     form = Overviewform()
     teacher_id=Teacher_apply.objects.get(user=request.user.id)
@@ -266,7 +282,7 @@ def overview(request):
                 'counter':counter,
                 'no_of_students':no_of_students,
                 'form':form
-                
+
             }
         return render(request,'transaction_details.html',context)
     else:
@@ -293,7 +309,7 @@ def overview(request):
             }
             if request.method=='POST':
                 form = Overviewform(request.POST, request.FILES)
-        
+
                 form.fields['subject'].initial=subject_object.id
                 form.fields['class_n'].initial=class_object.id
                 form.fields['teacher'].initial=teacher_id
@@ -313,10 +329,10 @@ def overview(request):
                 print('done_saving')
                 messages.info(request, "Overview successfully added,now continue to the class")
                 return redirect('e_learning:teacher_homepage')
-            
+
             return render(request,'overview.html',context)
 
-
+@login_required
 def upload_content(request):
     content=Content.objects.all().order_by('-id')
     form = Contentform()
@@ -350,7 +366,7 @@ def upload_content(request):
             messages.info(request, "something went wrong.")
             print('didnt save')
 	    #return redirect('e_learning:upload_content')
-	    
+
 	#return render(request,'index.html', context)
     return render(request,'upload_content.html',context)
 
@@ -360,6 +376,7 @@ def pdf_view(request):
     except FileNotFoundError:
         raise Http404()
 
+@login_required
 def post_subject(request):
 
     form = Contentform()
@@ -377,10 +394,10 @@ def post_subject(request):
     context = {"form": form,}
     return render(request, 'shop/farmer.html', context)
 
-
+@login_required
 def get_video(request,id):
     obj= Upload_topics.objects.get(id=id)
-    
+
     subject=Teacher_apply.objects.filter(user=request.user.id)
     subject_one=subject[0].subject_one
     subject_two=subject[0].subject_two
@@ -391,6 +408,7 @@ def get_video(request,id):
     }
     return render(request, 'video.html', context)
 
+@login_required
 def get_document(request,id):
     obj= Content.objects.get(id=id)
     try:
@@ -405,7 +423,7 @@ def get_document(request,id):
 
 
 
-class HomeView(ListView):
+class HomeView(LoginRequiredMixin,ListView):
     model = Subjects_overview
     paginate_by = 12
     template_name = 'student_homepage.html'
@@ -416,12 +434,12 @@ class HomeView(ListView):
     #     teacher_user=i.teacher.user
     #     profile=UserProfile.objects.filter(user=teacher_user)[0]
     #     print(profile.firstname, profile.lastname)
-    
+
     def get(self, request, *args, **kwargs):
         context = locals()
         context['overview'] = self.overview
-        
-        
+
+
         return render(self.request,self.template_name, context,)
 
         #print('# Code block for GET request')
@@ -430,6 +448,7 @@ class HomeView(ListView):
         # Code block for POST request
         print('# Code block for POST request')
 
+@login_required
 def student_homepage(request):
     student_subjectsz = Subscription.objects.all()
     print(student_subjectsz)
@@ -442,6 +461,7 @@ def student_homepage(request):
     }
     return render(request,'student_personal_homepage.html',context)
 
+@login_required
 def student_personal_homepage(request):
     student_subjects = Subscription.objects.filter(student=request.user.id)
     print(student_subjects)
@@ -452,6 +472,7 @@ def student_personal_homepage(request):
     }
     return render(request,'student_personal_homepage.html',context)
 
+@login_required
 def start_reading(request,slug):
     start_learning=Subscription.objects.get(id=slug)
     material_name = start_learning.subject.subject_name
@@ -466,6 +487,7 @@ def start_reading(request,slug):
     }
     return render(request,'start_reading.html',context)
 
+@login_required
 def open_content(request,slug):
     open_content=Upload_topics.objects.get(id=slug)
     print(open_content.id)
@@ -508,7 +530,7 @@ def open_content(request,slug):
             return HttpResponseRedirect(post.get_open_content())
             #return render(reverse('e_learning:open_content',kwargs={'slug':open_content.id}))
     else:
-        
+
         comment_form = CommentForm(initial={'name': request.user,'email':request.user.userprofile.email})
 
     return render(request, template_name, {'post': post,
@@ -519,6 +541,7 @@ def open_content(request,slug):
                                            'class_object':class_object,
                                            'comment_form': comment_form})
 
+@login_required
 def apply_to_teach(request):
     print(request.user.userprofile,request.user.userprofile.id)
     applyform=Applyform()
@@ -552,15 +575,17 @@ def apply_to_teach(request):
         apply_data.save()
 
         messages.info(request, "Your application has succefully submitted for review")
-            
+
 
 
 
     return render(request,'apply_to_teach.html',context)
 
+@login_required
 def subject_topic(request):
 	return render(request,'subject_topic.html')
 
+@login_required
 def subject_overview(request,slug):
     overview=Subjects_overview.objects.get(id=slug)
     recomend=Subjects_overview.objects.filter(class_n=overview.class_n)
@@ -574,8 +599,9 @@ def subject_overview(request,slug):
     'recomended':recomended,
     }
     return render(request,'subject_overview.html',context)
-    
 
+
+@login_required
 def teacher_homepage(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -629,7 +655,7 @@ def teacher_homepage(request):
             }
             return render(request,'teacher_homepage.html',context)
 
-
+@login_required
 def teacher_alerts(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -782,7 +808,7 @@ def teacher_alerts(request):
     #         #return HttpResponseRedirect(post.get_open_content())
     #         return redirect('e_learning:teacher_alerts')
     # else:
-        
+
     #     comment_form = CommentForm(initial={'name': request.user,'email':request.user.userprofile.email})
 
     # return render(request, template_name, {'post': all_teacher_topics,
@@ -798,12 +824,15 @@ def teacher_alerts(request):
 def about(request):
 	return render(request,'about.html')
 
-def error(request):
+@login_required
+def error_404_view(request,exception):
 	return render(request,'error.html')
 
+@login_required
 def teacher_new_base(request):
 	return render(request,'teacher_new_base.html')
 
+@login_required
 def view_my_students(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -867,7 +896,8 @@ def view_my_students(request):
                 'teacher_students':teacher_students,
             }
             return render(request,'view_my_students.html',context)
-    
+
+@login_required
 def my_uploaded(request,slug):
     uploaded=Subjects_overview.objects.get(id=slug)
     print(slug)
@@ -877,6 +907,7 @@ def my_uploaded(request,slug):
     messages.info(request, "Subject s deleted")
     return redirect('e_learning:my_uploaded_subjects')
 
+@login_required
 def edit_my_uploaded(request,slug):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -938,21 +969,21 @@ def edit_my_uploaded(request,slug):
                 'no_of_students':no_of_students,
                 'retrieved_commented':retrieved_commented,
                 'uploaded':uploaded,
-                'edit_uploaded':edit_uploaded, 
+                'edit_uploaded':edit_uploaded,
                 'subject_name':subject_name,
             }
             return render(request,'teacher_edit_subject_topics.html',context)
 
-
+@login_required
 def topic_delete(request,slug):
     Upload_topics.objects.get(id=slug).delete()
     # context={
-        
+
     # }
     messages.info(request, "Topic successfully deleted")
     return redirect('e_learning:my_uploaded_subjects')
 
-
+@login_required
 def edit_my_topic(request,slug):
     form = Uploadform()
     subject=Teacher_apply.objects.filter(user=request.user.id)
@@ -987,8 +1018,8 @@ def edit_my_topic(request,slug):
         edit_uploaded.save()
         print('done_saving')
         messages.info(request, "Topic successfully updated")
-        
-        
+
+
     context={
         'edit_uploaded':edit_uploaded,
         'subject_two':subject_two,
@@ -997,6 +1028,7 @@ def edit_my_topic(request,slug):
     }
     return render(request,'teacher_edit_subject_individual_topics.html',context)
 #######kam and edit here
+@login_required
 def teacher_uploaded_subjects(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -1067,7 +1099,7 @@ def teacher_uploaded_subjects(request):
             }
             return render(request,'teacher_uploaded_subjects.html',context)
 
-
+@login_required
 def transaction_details(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -1128,6 +1160,7 @@ def FAQ(request):
 # def my_profile(request):
 # 	return render(request,'my_profile.html')
 
+@login_required
 def payment_details(request):
     my_pay_records=PaymentRecords.objects.filter(student=request.user.id)
     print(my_pay_records)
@@ -1136,6 +1169,7 @@ def payment_details(request):
     }
     return render(request,'student_payment_details.html',context)
 
+@login_required
 def switch_to_teacher_page(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     subjects=[]
@@ -1148,6 +1182,7 @@ def switch_to_teacher_page(request):
     }
     return render(request,'teacher_homepage.html',context)
 
+@login_required
 def view_new_uploaded_content(request):
     content=Content.objects.all().order_by('-id')
     subject=Teacher_apply.objects.filter(user=request.user.id)
@@ -1198,7 +1233,7 @@ def view_new_uploaded_content(request):
 
 #         return render(request, self.template_name, {'form': form})
 
-
+@login_required
 def classes(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     class_s=Class_table.objects.all()
@@ -1213,7 +1248,7 @@ def classes(request):
     subject_one=subject[0].subject_one
     subject_two=subject[0].subject_two
     subject_id=Subjects.objects.get(subject_name=subject[0].subject_one)
-    
+
     #print(subject_id.id)
     subject_id = subject_id.id
 
@@ -1273,11 +1308,11 @@ def classes(request):
             }
             return render(request,'classes.html',context)
 
-
+@login_required
 def classes_base(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     class_s=Class_table.objects.all()
-    
+
     subjects=[]
     for sub in subject:
         subjects.append(sub.subject_one)
@@ -1306,10 +1341,11 @@ def classes_base(request):
     #print(class_s.value)
     return render(request,'teacher_base.html',context)
 
+@login_required
 def classes2(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     class_s=Class_table.objects.all()
-    
+
     #print(subject[0].subject_one.id,subject[0].subject_two.id)
     subject_o=subject[0]
     subject_one=subject[0].subject_one
@@ -1386,6 +1422,7 @@ def about_us(request):
 def comment(request):
     return render(request,'comment.html')
 
+@login_required
 def chatroom(request):
     comment_form=CommentForm()
     my_teacher_id=Teacher_apply.objects.get(user= request.user.id)
@@ -1441,17 +1478,19 @@ def chatroom(request):
 
     return render(request,'chatroom.html',context)
 
+@login_required
 def push(request,slug):
     print(slug)
     # if request.method=='POST':
     #     subject_id=request.POST.get("subject_id")
     #     print(subject_id)
 
-    context = {    
+    context = {
     }
     return render(request,'classes.html',context)
 
 ##########################views
+@login_required
 def post_detail(request):
     template_name = 'post_detail.html'
     post = get_object_or_404(Upload_topics, id=1)
@@ -1487,7 +1526,7 @@ def post_detail(request):
             new_comment.save()
             return redirect('e_learning:post_detail')
     else:
-        
+
         comment_form = CommentForm(initial={'name': request.user,'email':request.user.userprofile.email})
 
     return render(request, template_name, {'post': post,
@@ -1495,7 +1534,7 @@ def post_detail(request):
                                            'new_comment': new_comment,
                                            'comment_form': comment_form})
 
-
+@login_required
 def choose(request):
     subject=Teacher_apply.objects.filter(user=request.user.id)
     print(request.user)
@@ -1542,7 +1581,7 @@ def choose(request):
 
             form = ChatForm()
             individuals = UserProfile.objects.all()
-            
+
 
             if request.method=='POST':
                 form = ChatForm(request.POST, request.FILES)
@@ -1643,7 +1682,7 @@ class DialogsView(View):
                     'counter':counter,
                     'no_of_students':no_of_students,
                     'retrieved_commented':retrieved_commented,
-                    'user_profile': request.user, 
+                    'user_profile': request.user,
                     'chats': chats,
                     }
                 return render(request, 'dialogue.html',context)
@@ -1711,7 +1750,7 @@ class MessagesView(View):
                 except Chat.DoesNotExist:
                     chat = None
                 form=MessageForm()
-             
+
                 return render(
                         request,
                         'message_list.html',
@@ -1726,7 +1765,7 @@ class MessagesView(View):
                             'form': form
                         }
                     )
-     
+
     def post(self, request, chat_id):
         form = MessageForm(data=request.POST)
         if form.is_valid():
@@ -1799,4 +1838,3 @@ class CreateDialogView(View):
                     'chat_id': chat.id
                     }
                 return redirect(reverse('e_learning:messages'))
-        

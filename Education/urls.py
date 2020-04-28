@@ -26,4 +26,5 @@ urlpatterns = [
     path('subject_overview/<slug>/', include('e_learning.urls')),
 ]
 
+handler404 = 'e_learning.views.error_404_view'
 

@@ -32,12 +32,12 @@
         <h6 class="card-title text-primary text-center"><b>{{teacher_uploader.subject}}</b></h6>
         <h6 class="text-center"><b>{{ teacher_uploader.class_n }}</b></h6>
         <hr>
-        <div class="row justify-content-center">
-          <div class="col-md-5 pl-5">
-            <a href="{{ teacher_uploader.edit_subject_uploaded_url }}" class="btn btn-outline-primary btn-sm">Edit</a>
+        <div class="row">
+          <div class="col-md-6 pl-5 col_edit">
+            <a href="{{ teacher_uploader.edit_subject_uploaded_url }}" class="btn btn-outline-primary btn-sm edit_subject">Edit</a>
           </div>
-          <div class="col-md-7 pl-5">
-            <a href="{{ teacher_uploader.get_subject_uploaded_url }}" class="btn btn-outline-danger hero-button plat btn-sm" >Delete</a>
+          <div class="col-md-6 pl-5 col_delete">
+            <a href="{{ teacher_uploader.get_subject_uploaded_url }}" class="btn btn-outline-danger hero-button plat btn-sm delete_subject" >Delete</a>
           </div>
         </div>
       </div>
@@ -48,6 +48,6 @@
 </div>
 <!-- /.container-fluid -->
 
-  
+
 
 {% endblock %}

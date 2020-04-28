@@ -13,14 +13,16 @@
  <div class="container-fluid">
  	<div class="row">
  		<div class="col-md-6">
- 			<div class="input-group shadow-sm">
-		    <input type="text" class="form-control border-right-0 border" placeholder="Search for........." >
-		    <div class="input-group-append">
-		      <button class="btn btn-outline-primary border-left-0 border-right-0 border" type="button">
-		        <i class="fa fa-search"></i>
-		      </button>
-		    </div>
-		  </div>
+ 			<form action="{% url 'e_learning:search' %}">
+ 				<div class="input-group shadow-sm">
+				   <input type="text" class="form-control border-right-0 border" required="required" placeholder="Search for........." name="q" >
+				   <div class="input-group-append">
+				     <a class="btn btn-outline-primary border-left-0 border-right-0 border" href="{% url 'e_learning:search' %}" type="button">
+				       <i class="fa fa-search"></i>
+				      </a>
+				    </div>
+				  </div>
+ 			</form>
  		</div>
  		<div class="col-md-6">
  		</div>
@@ -30,12 +32,11 @@
 	<div class="card shadow-sm mb-5 pb-4">
 		<h6 class="pt-4 pl-4 pb-1" style="font-size: 18px; font-family: Times;"><i class="fas fa-book-open fa-1x ml-2">&nbsp;&nbsp;On-going Subjects</i></h6>
 		<div class="row p-3">
+			{% if overview %}
 			{% for item in overview %}
-			<div class="col-md-3 p-2">
-				<div class="card shadow w-100 h-100">
-			  	<div class="text-center">
-				  <img class="rounded-circle" src="{% static 'e_learning/image/logo.PNG' %}" class="card-img-top" width="80%" height="100%" alt="...">
-				  </div>
+			<div class="col-md-3 p-3">
+				<div class="card shadow w-100 h-100" style="width: 18rem;">
+				  <img class="card-img-top" src="{{ item.image.url}}" alt="Card image cap" style="height: 200px;">
 				  <div class="card-body text-center">
 				    <h6 class="card-title text-primary"><b>{{ item.subject }}</b>
 				    </h6>
@@ -43,21 +44,27 @@
 				    <p class="text-muted text-center">
 				    <span style="font-size: 14px;">Duration: {{ item.duration }}</span>
 			    	</p><hr>
-			    	<div class="h5 mb-0 font-weight-bold text-gray-800"><small><b>
+			    	<!--div class="h5 mb-0 font-weight-bold text-gray-800"><small><b>
 			    		<span class="text-danger">USD:</span>&nbsp;{{ item.price }}<br><span class="text-danger">UGX:</span>&nbsp;{{ item.price }}/=</b></small>
-			    	</div><hr>
+			    	</div-->
 			    	<p class="text-muted text-center">
-	
+
 				    <span>By: Mr. {{item.teacher.user_profile.firstname}} {{item.teacher.user_profile.lastname}}</span>
 			    	</p>
-				    <a href="{{ item.get_absolute_url }}" class="btn btn-outline-primary icon-btn btn-sm mt-2 w-50 " style="border-radius: 19px;">
-                      <span class="btn-fa fas fa-award rounded-circle text-dark bg-white p-1">
-                      </span>&nbsp;&nbsp;Learn More
-                  </a>
-				</div>
+				    <a href="{{ item.get_absolute_url }}" class="btn btn-outline-primary icon-btn btn-sm mt-2 " style="border-radius: 19px;">
+                      <i class="fas fa-award rounded-circle text-dark bg-white p-1">
+                      </i>&nbsp;&nbsp;Learn More
+                    </a>
+				  </div>
 				</div>
 			</div>
 			{% endfor %}
+			{% else %}
+				<div class="col-md-12">
+					<h1 class="text-center mt-4 text-muted" style="font-family: Times;">No Such Results found for<br>"{{query_string}}"</h1>
+					<h6 class="text-center pt-4 pb-4"><a href="{% url 'e_learning:home_view' %}" class="text-primary">Back to Home</a></h6>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 </div>
