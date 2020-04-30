@@ -1,4 +1,4 @@
-# VirtualClass2
+# VirtualClass
 Virtual Class      
 User journey  https://youtu.be/-xxO8lKDoHc    
 
