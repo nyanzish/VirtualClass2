@@ -49,7 +49,9 @@ from .views import(
 	choose,
 	edit_my_topic,
 	topic_delete,
-	Search
+	terms_and_conditions,
+	Search,
+	subscription_approval
 
 	)
 
@@ -113,6 +115,9 @@ urlpatterns = [
 	path('choose/',choose,name='choose'),
 	path('edit_my_topic/<slug>/',edit_my_topic,name='edit_my_topic'),
 	path('search/',Search,name='search'),
+	path('terms_and_conditions/',terms_and_conditions, name='terms_and_conditions'),
+	path('subscription_approval/',subscription_approval, name='subscription_approval'),
+	path('subscription_approval/<slug>/',subscription_approval, name='subscription_approval'),
 
 ]
 

@@ -1,5 +1,7 @@
 from django import forms
-from .models import Teacher_apply,Upload_topics,Subjects_overview,Comment,Message,Chat
+from django.forms import ModelForm
+from phonenumber_field.formfields import PhoneNumberField
+from .models import Teacher_apply,Upload_topics,Subjects_overview,Comment,Message,Chat,UserProfile
 
 # class Contentform(forms.ModelForm):
 #     class Meta:
@@ -29,6 +31,30 @@ from .models import Teacher_apply,Upload_topics,Subjects_overview,Comment,Messag
 #         #self.fields['Notes'].widget.attrs.update({'class' : 'btn btn-primary w-25'})
 
 
+class SignupForm(ModelForm):
+    telephone = PhoneNumberField()
+
+    class Meta:
+        model = UserProfile
+        exclude = ['user','role','date_of_record','image']
+
+        widgets = {
+            'date_of_birth':forms.DateInput(attrs={'type':'date'}, format = 'YYYY-MM-DD'),
+            }
+
+        # date_of_birth = forms.DateField(widget = forms.DateInput(attrs={'placeholder':'YYYY-MM-DD','required':'required'})),
+
+    def signup(self, request, user):
+        user.userprofile.firstname = self.cleaned_data['firstname']
+        user.userprofile.lastname = self.cleaned_data['lastname']
+        user.userprofile.gender= self.cleaned_data['gender']
+        user.userprofile.location = self.cleaned_data['location']
+        user.userprofile.telephone = self.cleaned_data['telephone']
+        user.userprofile.email = self.cleaned_data['email']
+        user.userprofile.date_of_birth = self.cleaned_data['date_of_birth']
+        user.userprofile.save()
+
+
 class Uploadform(forms.ModelForm):
     class Meta:
         model = Upload_topics
@@ -43,7 +69,7 @@ class Uploadform(forms.ModelForm):
         'videos'
         ,]
         widgets = {
-           'video': forms.ClearableFileInput(attrs={'class' : ' ','multiple': True}),
+          'video': forms.ClearableFileInput(attrs={'class' : ' ','multiple': True}),
 
 
         }

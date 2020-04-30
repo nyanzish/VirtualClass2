@@ -15,6 +15,7 @@ from django.views.generic import ListView, DetailView, View
 from django.http import FileResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import CommentForm
+from django.core.mail import send_mail,BadHeaderError,EmailMessage
 from .models import (
     UserProfile,
     Class_table,
@@ -24,7 +25,7 @@ from .models import (
     Subscription,
     PaymentRecords,
     Upload_topics,
-    Math,
+    Mathematics,
     Physics,
     Chemistry,
     Biology,
@@ -165,7 +166,7 @@ def upload_to(request):
 
     teacher_id=Teacher_apply.objects.get(user=request.user.id)
     #print(teacher_id.id)
-    print(class_id,subject_id,'88888888888888888')
+    #print(class_id,subject_id,'88888888888888888')
     overview=Subjects_overview.objects.get(class_n__exact=class_id,subject__exact=subject_id,teacher=teacher_id)
     print(overview)
 
@@ -260,7 +261,7 @@ def overview(request):
     subject_one=subject[0].subject_one
     subject_two=subject[0].subject_two
 
-    current_teacher = my_teacher_id.id
+    current_teacher = teacher_id.id
     print(current_teacher,'kkkkkkkk')
 
     list_of_students = []
@@ -284,7 +285,29 @@ def overview(request):
                 'form':form
 
             }
-        return render(request,'transaction_details.html',context)
+        if request.method=='POST':
+            form = Overviewform(request.POST, request.FILES)
+
+            form.fields['subject'].initial=subject_object.id
+            form.fields['class_n'].initial=class_object.id
+            form.fields['teacher'].initial=teacher_id
+            form.fields['subject'].value=subject_object.id
+            form.fields['class_n'].value=class_object.id
+            form.fields['teacher'].value=teacher_id.id
+            #overview_value = form.cleaned_data.get('overview')
+            save_form = form.save(commit=False)
+            form.cleaned_data.get('over_view')
+            form.cleaned_data.get('teacher')
+            form.cleaned_data.get('class_n')
+            form.cleaned_data.get('subject')
+            form.cleaned_data.get('duration')
+            form.cleaned_data.get('price')
+            save_form.video= request.FILES['video']
+            save_form.save()
+            print('done_saving')
+            messages.info(request, "Overview successfully added,now continue to the class")
+            return redirect('e_learning:teacher_homepage')
+        return render(request,'overview.html',context)
     else:
         for my_studnts in list_of_students:
             print(my_studnts)
@@ -463,7 +486,7 @@ def student_homepage(request):
 
 @login_required
 def student_personal_homepage(request):
-    student_subjects = Subscription.objects.filter(student=request.user.id)
+    student_subjects = Subscription.objects.filter(student__exact=request.user.id,active__exact=True)
     print(student_subjects)
     for my_course in student_subjects:
         print(my_course.student)
@@ -534,12 +557,12 @@ def open_content(request,slug):
         comment_form = CommentForm(initial={'name': request.user,'email':request.user.userprofile.email})
 
     return render(request, template_name, {'post': post,
-                                           'comments': comments,
-                                           'new_comment': new_comment,
-                                           'open_content':open_content,
-                                           'subject_namez':subject_namez,
-                                           'class_object':class_object,
-                                           'comment_form': comment_form})
+                                          'comments': comments,
+                                          'new_comment': new_comment,
+                                          'open_content':open_content,
+                                          'subject_namez':subject_namez,
+                                          'class_object':class_object,
+                                          'comment_form': comment_form})
 
 @login_required
 def apply_to_teach(request):
@@ -585,10 +608,26 @@ def apply_to_teach(request):
 def subject_topic(request):
 	return render(request,'subject_topic.html')
 
+def subscription_approval(request,slug):
+    overview=Subscription.objects.filter(subject_overview=slug)
+    #print(overview.active)
+    #####################3check if payment is successful#############3
+    for subscription_state in overview:
+        subscription_state.active=True
+        subscription_state.save()
+        print(subscription_state.active,'ggggggggg')
+
+    context ={
+            'overview':subscription_state
+    }
+
+    return redirect('e_learning:my_subjects')
+
 @login_required
 def subject_overview(request,slug):
     overview=Subjects_overview.objects.get(id=slug)
     recomend=Subjects_overview.objects.filter(class_n=overview.class_n)
+    teacher = Teacher_apply.objects.get(user = overview.teacher.user)
     for i in recomend:
         print(i.price,i.teacher.user,i.class_n,i.subject,i.subject.subject_image)
     recomended = recomend.count()
@@ -597,7 +636,32 @@ def subject_overview(request,slug):
     'overview':overview,
     'recomend':recomend,
     'recomended':recomended,
+    'slug':slug,
     }
+    apply_data = Subscription(
+            student=request.user,
+            user_profile=request.user.userprofile,
+            subject_overview=overview ,
+            class_n= overview.class_n ,
+            subject =overview.subject ,
+            teacher = teacher,
+            Amount = overview.price,
+            duration = overview.duration,
+
+        )
+    apply_data.save()
+    payment = PaymentRecords(
+            student=request.user,
+            user_profile=request.user.userprofile,
+            subject_overview=overview ,
+            class_n= overview.class_n ,
+            subject =overview.subject ,
+            teacher = teacher,
+            Amount = overview.price,
+            duration = overview.duration,
+
+        )
+    payment.save()
     return render(request,'subject_overview.html',context)
 
 
@@ -1356,7 +1420,7 @@ def classes2(request):
     print(class_s)
 
     my_teacher_id=Teacher_apply.objects.get(user= request.user.id)
-    current_teacher = my_teacher_id.id
+    current_teacher = (my_teacher_id.id)
     print(current_teacher,'kkkkkkkk')
 
     list_of_students = []
@@ -1410,7 +1474,22 @@ def classes2(request):
             return render(request,'classes.html',context)
 
 
+def terms_and_conditions(request):
+    return render(request,'terms_and_conditions.html')
+
 def contact_us(request):
+    if request.method == 'POST':
+        name = request.POST.get('your_name')
+        phone_no = request.POST.get('phone_no')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        try:
+            email = EmailMessage(subject= f'Inquiry from {name} whose email is { email}',body=message,to=['capstoneprojects2020@gmail.com'],headers={'Message-ID': name,'Contact':phone_no })
+            email.send()
+            # send_mail(name, phone_no, email,message, ['capstoneprojects2020@gmail.com'])
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+        # return redirect('success')
     return render(request,'contact_us.html')
 
 def team(request):
@@ -1530,9 +1609,9 @@ def post_detail(request):
         comment_form = CommentForm(initial={'name': request.user,'email':request.user.userprofile.email})
 
     return render(request, template_name, {'post': post,
-                                           'comments': comments,
-                                           'new_comment': new_comment,
-                                           'comment_form': comment_form})
+                                          'comments': comments,
+                                          'new_comment': new_comment,
+                                          'comment_form': comment_form})
 
 @login_required
 def choose(request):

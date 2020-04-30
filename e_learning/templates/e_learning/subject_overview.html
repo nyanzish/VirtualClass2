@@ -49,7 +49,7 @@
                 <span class="text-danger">USD:</span>&nbsp;${{ overview.price }}<br><span class="text-danger">UGX:</span>&nbsp;{{ overview.price }}/=
               </div>-->
               <div class="pt-3 pb-3">
-                <a href="#" class="btn btn-outline-primary mt-2" style="border-radius: 19px;">
+                <a href="{% url 'e_learning:subscription_approval' slug %}" class="btn btn-outline-primary mt-2" style="border-radius: 19px;">
                     <span class="btn-fa fas fa-award rounded-circle text-dark bg-white p-1">
                     </span>&nbsp;&nbsp;Subscribe Now
                 </a>
@@ -60,7 +60,7 @@
           <div class="row mt-3 mb-3">
             <div class="col-md-2 text-center">
               <div class="pt-2 pb-2 mr-3">
-                <img class="img-thumbnail" src="{% static 'e_learning/image/profile_pic.jpg' %}" style="height:120px;width: 120px;">
+                <img class="img-thumbnail" src="{{overview.teacher.user_profile.image.url}}" style="height:120px;width: 120px;">
               </div>
             </div>
             <div class="col-md-3">

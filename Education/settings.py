@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'ckeditor',
     'ckeditor_uploader',
+    'phonenumber_field',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -148,14 +149,20 @@ SIGNUP_REDIRECT_URL ='/accounts/login/'
 #email conf
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER  = 'capstoneprojects2020@gmail.com'
+EMAIL_HOST_PASSWORD = 'Capstone@2020'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = DEFAULT_FROM_EMAIL = 'nyanzishafik98@gmail.com'
-EMAIL_HOST_PASSWORD = 'Shafik15@'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = False
+
+
+
+
 
 ACCOUNT_EMAIL_REQUIRED =True
 ACCOUNT_UNIQUE_EMAIL =True
 ACCOUNT_AUTHENTICATION_METHOD ='username_email'
-ACCOUNT_EMAIL_SUBJECT_PREFIX ='[StartLeaernig.com]'
+ACCOUNT_EMAIL_SUBJECT_PREFIX ='[virtualClass.com]'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL ='/accounts/login/'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
@@ -190,3 +197,6 @@ CKEDITOR_CONFIGS = {
         'width': 1000,
     },
 }
+
+
+ACCOUNT_SIGNUP_FORM_CLASS = 'e_learning.forms.SignupForm'

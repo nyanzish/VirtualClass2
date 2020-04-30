@@ -64,7 +64,7 @@
         <a class="nav-link mt-1 pt-2 text-dark-400 mr-2" href="{% url 'e_learning:home_view' %}">Home<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link mt-1 pt-2 text-dark-400 mr-2" href="{% url 'e_learning:about_us' %}">About<span class="sr-only">(current)</span></a>
+        <a class="nav-link mt-1 pt-2 text-dark-400 mr-2" href="{% url 'e_learning:about' %}">About<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link mt-1 pt-2 mr-2 text-dark-400" href="{% url 'e_learning:my_subjects' %}">My Subjects</a>
@@ -179,10 +179,14 @@
 
           <ul class="list-unstyled pb-3">
           <li>
-            <a class="text-dark pb-3" href="#!" style="font-size: 14px;">westnileweb</a>
+             <a href="https://www.westnileweb.com/">
+                <img src="{% static 'e_learning/image/westnile_web.PNG' %}" width="150" height="50" class="d-inline-block" alt="">
+             </a>
           </li>
-          <li>
-            <a class="text-dark pb-3" href="#!" style="font-size: 14px;">agriculturalcluster</a>
+          <li class="pt-3">
+            <a class="">
+                <img src="{% static 'e_learning/image/acd.PNG' %}" width="70" height="60" class="d-inline-block" alt="">
+            </a>
           </li>
         </ul>
 

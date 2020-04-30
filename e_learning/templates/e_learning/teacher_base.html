@@ -202,7 +202,7 @@
       <li class="nav-item dropdown no-arrow">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <img class="img-profile rounded-circle mr-2" src="{{ user.userprofile.image.url}}" width="33" height="33">
-          <span class="mr-2 d-lg-inline text-gray-600 small">{{user.username}}&nbsp;<i class="fa fa-caret-down"></i><</span>
+          <span class="mr-2 d-lg-inline text-gray-600 small">{{user.username}}&nbsp;<i class="fa fa-caret-down"></i></span>
         </a>
         <!-- Dropdown - User Information -->
         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -329,10 +329,14 @@
 
           <ul class="list-unstyled pb-3">
           <li>
-            <a class="text-dark pb-3" href="#!" style="font-size: 14px;">westnileweb</a>
+             <a href="https://www.westnileweb.com/">
+                <img src="{% static 'e_learning/image/westnile_web.PNG' %}" width="150" height="50" class="d-inline-block" alt="">
+             </a>
           </li>
-          <li>
-            <a class="text-dark pb-3" href="#!" style="font-size: 14px;">agriculturalcluster</a>
+          <li class="pt-3">
+            <a class="">
+                <img src="{% static 'e_learning/image/acd.PNG' %}" width="70" height="60" class="d-inline-block" alt="">
+            </a>
           </li>
         </ul>
 

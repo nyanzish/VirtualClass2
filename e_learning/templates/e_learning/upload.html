@@ -24,7 +24,7 @@
   <select class="form-control" id="cars" name="topic">
     {% for item in result %}
         <option value="{{item.topic_name}}">{{item.topic_name}}</option>
-    {% endfor %} 
+    {% endfor %}
       </select>
       {{ form.overview.as_hidden }}
     {{ form.class_level.as_hidden }}
@@ -33,7 +33,7 @@
   {{ form.content |as_crispy_field }}
   {{ form.attached_file |as_crispy_field }}
   {{ form.videos |as_crispy_field }}
-  
+
   <div class="text-center">
     <input type="submit" value="Upload Content" class="btn btn-primary mb-4 w-25" name="register" style="border-radius: 17px;" />
   </div>
